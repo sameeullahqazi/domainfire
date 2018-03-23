@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+	$('#main-cat').on('changed.bs.select',function(e,clickedIndex){
+		if(clickedIndex==0){
+			$('#sub-cat').prop("disabled",true);
+		} else {
+			$('#sub-cat').prop("disabled",false);
+		}
+		$('#sub-cat').selectpicker('refresh');
+		var catId=$(this).val();
+		$.post("subcats.php",{id:catId}).done(function(data){
+			$('select[name="sub-cat"]').html(data);
+			$('#sub-cat').selectpicker('render');$('#sub-cat').selectpicker('refresh');
+		});
+	});
+	$(document).ready(function(){
+		var permalinkBase='https://namebio.com/?s=';
+		var tableOptions={
+		"searching":false,
+		"processing":true,
+		"serverSide":true,
+		"lengthMenu":[[10,25,50,100],[10,25,50,"All"]],
+		"pageLength":10,
+		"stateSave":true,
+		"stateSaveParams":function(settings,data){
+			data.order=[[2,"desc"]];
+			data.start="";
+			data.search.search="";
+		},
+		"dom":'<"row"<"col-md-12"i>><"table-scrollable"rt><"row"<"col-md-2 col-sm-12"l><"col-md-10 col-sm-12"p>>',
+		"ajax":{
+			"url":"search-submit.php",
+			"type":"POST",
+			"data":function(d){
+				d.keyword=$('#keyword').val();
+				d.placement=$('#placement').val();
+				d.extension=$('#extension').val();
+				d.maincat=$('#main-cat').val();
+				d.subcat=$('#sub-cat').val();
+				d.daterange=$('#date-range').val();
+				d.pattern=$('#pattern').val();
+				d.venue=$('#venue').val();
+				d.excludehyphens=$('#uniform-exclude-hyphens > span').hasClass("checked").toString();
+				d.excludenumbers=$('#uniform-exclude-numbers > span').hasClass("checked").toString();
+				d.pricefrom=$('#price-from').val();
+				d.priceto=$('#price-to').val();
+				d.lengthfrom=$('#length-from').val();
+				d.lengthto=$('#length-to').val();
+			},
+			"dataSrc":function(json){
+				if($('#permalink').length){
+					$('#permalink').val(permalinkBase+json.searchid);
+				}
+				if($('#search_quantity').length){
+					$('#search_quantity').text(json.quantity);
+				}
+				if($('#search_amount').length){
+					$('#search_amount').text(json.amount);
+				}
+				if($('#search_average').length){
+					$('#search_average').text(json.average);
+				}
+				if($('#search_median').length){
+					$('#search_median').text(json.median);
+				}
+				if($('#search_min').length){
+					$('#search_min').text(json.minprice);
+				}
+				if($('#search_max').length){
+					$('#search_max').text(json.maxprice);
+				}
+				var chart=$('#my-chart').highcharts();
+				chart.series[0].setData(JSON.parse(json.series));
+				return json.data;
+			}
+		},
+			"aoColumns":[null,{"orderSequence":["desc","asc"]}, {"orderSequence":["desc","asc"]},{"orderable":false}],
+			"order":[[2,"desc"]],"language":{"url":""},
+		};
+		var resultsTable=$('#search-results').DataTable(tableOptions);
+		$("#search-submit").click(function(e){
+			e.preventDefault();
+			resultsTable.ajax.reload();
+			scrollToResults();
+		});
+		$("#reset-form").click(function(){
+			$('#main-cat').selectpicker('val',0);
+			$('#main-cat').trigger("changed.bs.select");
+			$('#sub-cat').prop('disabled',true);$('#sub-cat').selectpicker('refresh');
+			$('#placement').selectpicker('val','Anywhere');
+			$('#extension').selectpicker('val','Any');
+			$('#venue').selectpicker('val','Any');
+			$('#date-range').selectpicker('val','Any');
+			$('#uniform-exclude-hyphens > span').removeClass("checked");
+			$('#uniform-exclude-numbers > span').removeClass("checked");
+		});
+		$("#select-permalink").click(function(e){
+			e.preventDefault();
+			$("#permalink").select();
+		});
+		$("#permalink").focus(function(){
+			this.setSelectionRange(0,9999);
+			return false;
+		}).mouseup(function(){return false;});
+		function scrollToResults(){
+			$('html,body').animate({scrollTop:$("#results-anchor").offset().top},1000);
+		}
+	});
+</script>
+<script type="text/javascript">
+!function(a){
+	"use strict";function b(b,c){
+		this.element=a(b),this.settings=a.extend({},d,c),this._defaults=d,this._init()}
+		var c="Morphist",d={animateIn:"bounceIn",animateOut:"rollOut",speed:2e3,complete:a.noop};
+		b.prototype={_init:function(){
+			this.children=this.element.children(),this.element.addClass("morphist"),this.index=0,this.loop()},
+		loop:function(){
+			var b=this;
+			this._animateIn(),
+			this.timeout=setTimeout(function(){
+				var a=b._animateOut();
+				b._attachOutListener(a)
+			},
+				this.settings.speed),
+				a.isFunction(this.settings.complete)&&this.settings.complete.call(this)},
+				_attachOutListener:function(a){
+					var b=this;
+					a.one("webkitAnimationEnd mozAnimationEnd MSAnimationEndoanimationend animationend",
+					function(){
+						a.hasClass("mis-out")&&(a.removeClass(),
+						b.index=++b.index%b.children.length,b.loop())
+					})},
+					stop:function(){
+						clearTimeout(this.timeout)
+					},
+					_animateIn:function(){
+						return this.children.eq(this.index).addClass("animated mis-in "+this.settings.animateIn)},
+					_animateOut:function(){
+						var a=this.children.eq(this.index);
+						return a.removeClass(),this.settings.animateIn===this.settings.animateOut&&a[0].offsetWidth,a.addClass("animated mis-out "+this.settings.animateOut)}},a.fn[c]=function(d){
+						return this.each(function(){a.data(this,"plugin_"+c)||a.data(this,"plugin_"+c,new b(this,d))})}}(jQuery);
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+	if(document.getElementById("featured-listings")!=null){			
+		$.get("/featured-listings-header.php", {rand:519389}).done(function(data){
+			$("#featured-listings").append(data);
+			$("#featured-listings").Morphist({animateIn:"bounceIn",animateOut:"fadeOut",speed:6000});
+		});
+	}
+});
+</script>
+<script>
+jQuery(document).ready(function(){
+	$('iframe.tldpros').each(function(i,obj){
+		$(this).attr('src',$(this).data("iframeSource"));
+	});
+});
+</script>
+
+
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script>
+$(document).ready(function(){
+    $('#btn_get_data').click(function() {
+    	// alert('clicked');
+    	$.ajax({
+    		// type: 'post',
+    		// dataType: 'json',
+    		// url: 'http://dnpric.es/recent/',
+    		url: 'https://namebio.com/',
+    		data: {},
+    		success: function(data)
+    		{
+    			console.log('data upon success: ', data);
+    		},
+    		error: function(data)
+    		{
+    			console.log('data upon error: ', data);
+    		}
+    	});
+    });
+});
+</script>
+</head>
+	<body>
+		<input type='button' id='btn_get_data' value='Get Data'/>
+	</body>
+</html>
