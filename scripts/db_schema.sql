@@ -43,3 +43,19 @@ CREATE TABLE `transactions`
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `domains_data`;
+CREATE TABLE `domains_data`
+(
+`id` bigint(33) unsigned NOT NULL AUTO_INCREMENT,
+`domain_name` varchar(70),
+`time_created` timestamp null,
+`date_month_year` varchar(40),
+`price_symbol` varchar(1),
+`price_value` decimal(14, 2),
+`price_currency` varchar(5),
+`broker` varchar(40),
+`file_name` varchar(70),
+`created` timestamp default current_timestamp,
+PRIMARY KEY (`id`),
+UNIQUE KEY `domain_name_unique` (`domain_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8;
