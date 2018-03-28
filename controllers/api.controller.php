@@ -50,37 +50,6 @@
 			throw new Exception("Please provide the following attributes: " . implode(", ", $errors) . ".");
 		// $errors = $csapi->AuthenticateUser($params);
 		$response = $openSRS->apiCall($params);
-		/*
-		if(!empty($errors))
-		{
-			$response['errors'] = $errors;
-		}
-		else
-		{
-			// $errors = $csapi->AuthorizeUser($params);
-			if(!empty($errors))
-			{
-				$response['errors'] = $errors;
-			}
-			else
-			{
-				$action = $params['action'];
-				switch($action)
-				{
-					case 'lookup':
-						$domain = $params['domain'];
-						$response = $openSRS->lookUp($domain);
-						break;
-				
-				
-					default:
-						$response = array("Invalid action supplied! : '$action'");
-						break;
-				}
-			}
-		}
-		*/
-
 		// error_log("response in api controller: ".var_export($response, true));
 	
 		echo Common::json_format(json_encode($response));

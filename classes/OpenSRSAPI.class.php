@@ -73,7 +73,7 @@ class OpenSRSApi
 		try
 		{
 			if(!isset($params['action']))
-				throw new error ("'action' parameter not provided!");
+				throw new Exception ("'action' parameter not provided!");
 		
 			if(!isset($params['protocol']))
 				$params['protocol'] = 'XCP';
@@ -106,7 +106,7 @@ class OpenSRSApi
 			if($curl_error)
 			{
 				error_log("Curl Error: " . curl_error($ch));
-				throw new exception ($curl_error);
+				throw new Exception ($curl_error);
 			}
 			// error_log("xml_response in apiCall: " . $xml_response);
 			$json_response = $this->makeTheRequest($xml_response);
