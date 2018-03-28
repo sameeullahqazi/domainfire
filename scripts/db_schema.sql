@@ -1,3 +1,5 @@
+-- PWD: Q<lX<ZVXQ2yv
+
 DROP TABLE IF EXISTS `registrants`;
 CREATE TABLE `registrants`
 (

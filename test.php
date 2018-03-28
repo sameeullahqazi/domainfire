@@ -20,6 +20,22 @@
 		return $data;
 	}
 	
+	$params = array(
+		'param1' => 'value1',
+		'param2' => 'value2',
+		'param3' => array(
+			'p4' => 'v4',
+			'p5' => 'v5',
+			'p6' => array(
+				'p7' => 'v7',
+			),
+		),
+	);
+	// $params = $_GET;
+	// error_log("params: " . var_export($params, true));
+	$query_string = http_build_query($params);
+	error_log("query_string: " . urldecode($query_string));
+	exit();
 	
 	/*
 	-	ITERATE DIRECTORY FOR ALL FILES

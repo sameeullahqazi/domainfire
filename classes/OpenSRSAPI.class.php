@@ -72,9 +72,21 @@ class OpenSRSApi
 		// error_log("this in apiCall: " . var_export($this, true));
 		try
 		{
-			error_log("params in apiCall: " . var_export($params, true));
+			if(!isset($params['action']))
+				throw new error ("'action' parameter not provided!");
+		
+			if(!isset($params['protocol']))
+				$params['protocol'] = 'XCP';
+			
+			if(!isset($params['object']))
+				$params['object'] = 'domain';
+			
+			if(!isset($params['attributes']))
+				$params['attributes'] = $params;
+			
+			// error_log("params in apiCall: " . var_export($params, true));
 			$xml = $this->createXML($params);
-			error_log("xml in apiCall: " . $xml);
+			// error_log("xml in apiCall: " . $xml);
 			$len_xml = strlen($xml);
 			$data = [
 				'Content-Type:text/xml',
@@ -96,10 +108,10 @@ class OpenSRSApi
 				error_log("Curl Error: " . curl_error($ch));
 				throw new exception ($curl_error);
 			}
-			error_log("xml_response in apiCall: " . $xml_response);
+			// error_log("xml_response in apiCall: " . $xml_response);
 			$json_response = $this->makeTheRequest($xml_response);
 			$response = json_decode($json_response, true);
-			error_log("response in apiCall: " . var_export($response, true));
+			// error_log("response in apiCall: " . var_export($response, true));
 			$response_code = $response['response_code'];
 			if($response_code + 0 >= 300)
 			{
