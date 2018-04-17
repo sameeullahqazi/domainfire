@@ -426,5 +426,11 @@
 
 			 return $new_json;
 		}
+		
+		public static function fetchAndRemoveValue(&$array, $key) {
+			$value = isset($array[$key]) ? $array[$key] : null;
+			unset($array[$key]);
+			return $value;
+		}
 	}
 ?>

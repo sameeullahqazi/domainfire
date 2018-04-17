@@ -1,6 +1,7 @@
 <?php
 	error_reporting(E_ALL);
 	require_once(__DIR__ . "/classes/OpenSRSAPI.class.php");
+	require_once(__DIR__ . "/classes/StripeAPI.class.php");
 
 	/* gets the data from a URL */
 	function get_data($url) {
@@ -20,6 +21,7 @@
 		return $data;
 	}
 	
+	
 	$params = array(
 		'param1' => 'value1',
 		'param2' => 'value2',
@@ -31,11 +33,23 @@
 			),
 		),
 	);
-	// $params = $_GET;
-	// error_log("params: " . var_export($params, true));
+	$params = $_GET;
+	error_log("params: " . var_export($params, true));
 	$query_string = http_build_query($params);
 	error_log("query_string: " . urldecode($query_string));
 	exit();
+	
+	$public_key = 'pk_test_tku6RznxBWqGRh9WDKfLQh0G';
+	$secret_key = 'sk_test_dgCTyufM3XJXzHbj5q44ayrl';
+		
+	$stripe = new StripeAPI();
+	$src_token = $stripe->createToken();
+	$source = $src_token['id'];
+	// $stripe->createChargeUsingAPI(3.5, $source);
+	// $stripe->createCharge(3.5);
+	$stripe->listChargesUsingAPI();
+	exit();
+	
 	
 	/*
 	-	ITERATE DIRECTORY FOR ALL FILES

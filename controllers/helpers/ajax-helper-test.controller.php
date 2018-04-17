@@ -76,7 +76,24 @@ ToDos
 							'org_name' => $registrantOrgName,
 						);
 						
-						$response = $openSRS->registerDomain($domain, $years, 'new', 'sameeullahqazi', 'abcdef123456', $contact_info);
+						$reg_type = 'new';
+						$reg_username = 'sameeullahqazi';
+						$reg_password = 'abcdef123456';
+						
+						$attributes = array(
+							'domain' => $domain,
+							'period' => $years,
+							'custom_tech_contact' => 0, //0 means use the reseller's contact info, 1 means tech contact info must be separately provided
+							'reg_type' => $reg_type,
+							'reg_username' => $reg_username,
+							'reg_password' => $reg_password,
+							'contact_set' => array(
+								'admin' => $contact_info,
+								'owner' => $contact_info,
+								'billing' => $contact_info,
+							),
+						
+						$response = $openSRS->registerDomain($attributes);
 						
 						$transaction_info = array(
 							'domain_name' => $domain,

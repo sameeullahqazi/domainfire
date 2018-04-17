@@ -1,5 +1,6 @@
 <?php
 require_once(dirname(__DIR__) . "/includes/stripe-php-6.4.1/init.php");
+require_once(dirname(__DIR__) . '/includes/app_config.php');
 class StripeAPI
 {
     protected $user;
@@ -31,6 +32,16 @@ class StripeAPI
 		}
         
     }
+    
+    public function getPublicKey()
+    {
+    	return $this->publicKey;
+    }
+    
+    public function getPrivateKey()
+    {
+    	return $this->privateKey;
+    }
 	
 	public function listAllCharges($limit = null)
 	{
@@ -54,11 +65,13 @@ class StripeAPI
 	
 	public function createToken()
 	{
+		error_log("this->cardNumber: " . $this->cardNumber . ", this->exp_month: " . $this->expMonth . ", this->expYear: ". $this->expYear . ", this->cvc: " . $this->cvc);
 		$params = array(
 			"number" => $this->cardNumber,
 			"exp_month" => $this->expMonth,
 			"exp_year" => $this->expYear,
 		);
+		
 		if(!empty($this->cvc))
 			$params['cvc'] = $this->cvc;
 		
@@ -76,16 +89,19 @@ class StripeAPI
 		
 	}
 	
-	public function createCharge($amount, $capture = false, $currency = 'usd', $description = '')
+	public function createCharge($amount, $source = null, $capture = false, $currency = 'usd', $description = '')
 	{
 		try
 		{
-			$src_token = $this->createToken();
-			$source = $src_token['id'];
+			if(empty($source))
+			{
+				$src_token = $this->createToken();
+				$source = $src_token['id'];
+			}
 			$params = array(
 			  "amount" => $amount * 100,
 			  "currency" => $currency,
-			  "source" => $source, // obtained with Stripe.js
+			  "source" => $source,
 			  "description" => $description,
 			  "capture" => $capture,
 			);
@@ -125,5 +141,62 @@ class StripeAPI
 		}
 		
 	}
+	
+	public function listChargesUsingAPI()
+	{
+		$url = "https://api.stripe.com/v1/charges";
+	
+		$secret_key = $this->getPrivateKey();
+	
+		$curl = curl_init();			
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_HTTPGET, true);
+		curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			'Authorization: Bearer '.$secret_key,
+		));
+	
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+		// if($err)
+		error_log("Curl Error: " . var_export($err, true));
+		error_log("response in executeJSON(): " . var_export($response, true));
+		return $response;
+	}
+	
+	public function createChargeUsingAPI($amount, $source, $capture = false, $currency = 'usd', $description = '')
+	{
+		$url = "https://api.stripe.com/v1/charges";
+	
+		$secret_key = $this->getPrivateKey();
+		$post_data = array(
+			'amount' => $amount * 100,
+			'currency' => $currency,
+			'source' => $source,
+			'capture' => $capture,
+		);
+		$json_post_data = json_encode($post_data);
+		error_log("json_post_data: " . $json_post_data);
+	
+		$curl = curl_init();			
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+		// curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/x-www-form-urlencoded; charset=UTF-8', 
+			'Content-Length: ' . strlen($json_post_data),
+			'Authorization: Bearer '.$secret_key,
+		));
+	
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+		// if($err)
+		error_log("Curl Error: " . var_export($err, true));
+		error_log("response in executeJSON(): " . var_export($response, true));
+		return $response;
+	} 
 }
 ?>

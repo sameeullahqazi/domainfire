@@ -115,7 +115,12 @@ class OpenSRSApi
 			$response_code = $response['response_code'];
 			if($response_code + 0 >= 300)
 			{
-				throw new Exception($response['response_text'] . " ($response_code)");
+				$err_msg = $response['response_text'];
+				if(!empty($response_code))
+					$err_msg .=  " ($response_code)";
+				if(!empty($response['error']))
+					$err_msg .=  ". Details: " . $response['error'];
+				throw new Exception($err_msg);
 				// throw new Exception($response['error'] . " ($response_code)");
 			}	
 			return $response;			
@@ -160,7 +165,7 @@ class OpenSRSApi
 		}
 	}
 	
-	public function registerDomain($domain, $period, $reg_type, $reg_username, $reg_password, $contact_info)
+	public function registerDomain($attributes)
 	{
 		try
 		{
@@ -168,19 +173,7 @@ class OpenSRSApi
 				'protocol' => 'XCP',
 				'action' => 'SW_REGISTER',
 				'object' => 'domain',
-				'attributes' => array(
-					'domain' => $domain,
-					'period' => $period,
-					'custom_tech_contact' => 0, //0 means use the reseller's contact info, 1 means tech contact info must be separately provided
-					'reg_type' => $reg_type,
-					'reg_username' => $reg_username,
-					'reg_password' => $reg_password,
-					'contact_set' => array(
-						'admin' => $contact_info,
-						'owner' => $contact_info,
-						'billing' => $contact_info,
-					),
-				),
+				'attributes' => $attributes,
 			);
 			$response = $this->apiCall($params);
 			return $response;
