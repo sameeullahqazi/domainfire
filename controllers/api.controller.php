@@ -11,8 +11,8 @@
 	header('Content-Type: application/json; charset=utf-8');
 	// header('Access-Control-Allow-Origin: http://domainfire');
 	$params = $_GET;
-	error_log("params in api controller: ".var_export($params, true));
-	error_log("_POST in api controller: ".var_export($_POST, true));
+	// error_log("params in api controller: ".var_export($params, true));
+	// error_log("_POST in api controller: ".var_export($_POST, true));
 	
 	
 	
@@ -52,13 +52,13 @@
 
 						//	3. Charge Card via Stripe
 						$charge = $stripe->createCharge($amount, $token_id);
-						error_log("charge when created initially: " . var_export($charge, true));
+						// error_log("charge when created initially: " . var_export($charge, true));
 						$charge_id = $charge['id'];
 						$output[] = "Card successfully charged via Stripe";
 						
 						//	4.	Create specified Domain
 						$response = $openSRS->registerDomain($params);
-						error_log("response upon calling registerDomain: " . var_export($response, true));
+						// error_log("response upon calling registerDomain: " . var_export($response, true));
 						$transaction_info = array(
 							'domain_name' => $domain,
 							'years' 	=> $years,
@@ -86,7 +86,7 @@
 							
 							// At this point in time, store the transaction and the registrant info
 							
-							$registrant_id = Registrant::AddNewRegistrant($contact_info);
+							$registrant_id = Registrant::AddNewRegistrant($params['contact_set']['owner']);
 							
 							$transaction_info['registrant_id'] = $registrant_id;
 							$transaction_info['domain_id'] = $response['domain_id'];
