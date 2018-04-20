@@ -64,8 +64,8 @@ class Database
 			// Common::log_error(__FILE__, __LINE__, "SQL Query Execution Time", $msg);
 		}
 		
-		if(!$rs)
-			error_log("SQL error: " . mysqli_error($mysqli_link) . "\nSQL: " . $sql);
+		//if(!$rs)
+		//	error_log("SQL error: " . mysqli_error($mysqli_link) . "\nSQL: " . $sql);
 		return $rs;
 	}
 	

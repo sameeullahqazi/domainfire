@@ -419,7 +419,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage()."\nSQL: " . $sql);
+				// error_log($e->getMessage()."\nSQL: " . $sql);
 				throw $e;
 			}
 		}
@@ -449,7 +449,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -481,7 +481,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -520,7 +520,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -556,7 +556,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -583,7 +583,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -606,7 +606,7 @@
 				$str_table_data = urldecode(http_build_query($table_data, '', ', '));
 		
 				$sql = "update `$table_name` set $str_table_data where $col_name = '".Database::mysqli_real_escape_string($row_id)."'";
-				error_log("Update SQL in UpdateTableData(): ".$sql);
+				// error_log("Update SQL in UpdateTableData(): ".$sql);
 				if(!Database::mysqli_query($sql))
 				{
 					throw new Exception("SQL error in BasicDataModel::UpdateTableData(): ".Database::mysqli_error().", \nSQL: ".$sql);
@@ -616,7 +616,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}
@@ -647,7 +647,7 @@
 				if(!empty($keys))
 					$sql .= " where id in (" . implode (',', $keys). ")";
 			
-				error_log("Update SQL in BasicDataObject::UpdateMultipleRows(): " . $sql);
+				// error_log("Update SQL in BasicDataObject::UpdateMultipleRows(): " . $sql);
 				if(!Database::mysqli_query($sql))
 				{
 					throw new Exception("SQL error in BasicDataModel::UpdateMultipleRows(): ".Database::mysqli_error().", \nSQL: ".$sql);
@@ -657,7 +657,7 @@
 			}
 			catch(Exception $e)
 			{
-				error_log($e->getMessage());
+				// error_log($e->getMessage());
 				throw $e;
 			}
 		}

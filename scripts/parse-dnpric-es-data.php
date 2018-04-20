@@ -28,10 +28,32 @@
 	*/
 	$dirname = dirname(dirname(dirname(__DIR__))) . '/dnpric.es';
 	$files = scandir($dirname);
-	error_log("files: " . var_export($files, true));
+	
 	$arr_domains_data = array();
 	
-	foreach($files as $i => $filename)
+	$files_already_scanned = array();
+	$sql = "select distinct(file_name) as file_name from domains_data order by created";
+	$rows = BasicDataModel::getDataTable($sql);
+	foreach($rows as $row)
+	{
+		$files_already_scanned[] = $row['file_name'];
+	}
+	sort($files);
+	sort($files_already_scanned);
+	$files_to_scan = array_values(array_diff($files, $files_already_scanned));
+	
+	// error_log("files: " . var_export($files, true));
+	// error_log("files_already_scanned: " . var_export($files_already_scanned, true));
+	// error_log("files_to_scan: " . var_export($files_to_scan, true));
+	
+	
+	
+	
+	
+	
+	// exit();
+	
+	foreach($files_to_scan as $i => $filename)
 	{
 		$exploded_filename = explode('-', $filename);
 		$num_elements_exploded_filename = count($exploded_filename);
@@ -119,11 +141,11 @@
 								catch(Exception $e)
 								{
 									$eMessage = $e->getMessage();
-									$eCode = $e->getCode();
-									error_log("Exception message: " . $eMessage . ", code: ", $eCode);
+									$eCode = Database::mysqli_errno(); // $e->getCode();
+									// error_log("Exception (" . $eCode . ") : $eMessage");
 									switch($eCode)
 									{
-										case 0:
+										case 1062:
 											break;
 										
 										default:
@@ -142,7 +164,7 @@
 			// error_log("file renamed: " . var_export($res, true));
 		}
 	}
-	error_log("arr_domain_data: " . var_export($arr_domains_data, true));
+	// error_log("arr_domain_data: " . var_export($arr_domains_data, true));
 
 	exit();
 	
